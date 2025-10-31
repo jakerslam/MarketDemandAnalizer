@@ -1,0 +1,143 @@
+[
+  {
+    "id": 1,
+    "business_name": "Mountain Coffee Co.",
+    "city": "Salt Lake City",
+    "industry": "Cafes",
+    "revenue": 120000
+  },
+  {
+    "id": 2,
+    "business_name": "Bee Gone Pest Control",
+    "city": "Provo",
+    "industry": "Pest Control",
+    "revenue": 85000
+  },
+  {
+    "id": 3,
+    "business_name": "Peak Fitness Gym",
+    "city": "Orem",
+    "industry": "Fitness",
+    "revenue": 200000
+  },
+  {
+    "id": 4,
+    "business_name": "Logan Auto Works",
+    "city": "Logan",
+    "industry": "Auto Repair",
+    "revenue": 175000
+  },
+  {
+    "id": 5,
+    "business_name": "Utah Yoga Loft",
+    "city": "Park City",
+    "industry": "Fitness",
+    "revenue": 95000
+  },
+  {
+    "id": 6,
+    "business_name": "Desert Brew Café",
+    "city": "St. George",
+    "industry": "Cafes",
+    "revenue": 110000
+  },
+  {
+    "id": 7,
+    "business_name": "Canyon Pest Management",
+    "city": "Cedar City",
+    "industry": "Pest Control",
+    "revenue": 72000
+  },
+  {
+    "id": 8,
+    "business_name": "EcoTech Auto",
+    "city": "Ogden",
+    "industry": "Auto Repair",
+    "revenue": 160000
+  },
+  {
+    "id": 9,
+    "business_name": "Layton Fitness Center",
+    "city": "Layton",
+    "industry": "Fitness",
+    "revenue": 130000
+  },
+  {
+    "id": 10,
+    "business_name": "Sunrise Café",
+    "city": "Sandy",
+    "industry": "Cafes",
+    "revenue": 115000
+  },
+  {
+    "id": 11,
+    "business_name": "Top Gear Auto",
+    "city": "Bountiful",
+    "industry": "Auto Repair",
+    "revenue": 185000
+  },
+  {
+    "id": 12,
+    "business_name": "Hive Pest Pros",
+    "city": "Herriman",
+    "industry": "Pest Control",
+    "revenue": 91000
+  },
+  {
+    "id": 13,
+    "business_name": "Pure Grounds Coffee",
+    "city": "Lehi",
+    "industry": "Cafes",
+    "revenue": 99000
+  },
+  {
+    "id": 14,
+    "business_name": "Titan Fitness",
+    "city": "Spanish Fork",
+    "industry": "Fitness",
+    "revenue": 145000
+  },
+  {
+    "id": 15,
+    "business_name": "Quick Fix Auto",
+    "city": "Tooele",
+    "industry": "Auto Repair",
+    "revenue": 150000
+  },
+  {
+    "id": 16,
+    "business_name": "Bug Off Exterminators",
+    "city": "Springville",
+    "industry": "Pest Control",
+    "revenue": 78000
+  },
+  {
+    "id": 17,
+    "business_name": "Ridge View Café",
+    "city": "West Jordan",
+    "industry": "Cafes",
+    "revenue": 105000
+  },
+  {
+    "id": 18,
+    "business_name": "American Fork Gym",
+    "city": "American Fork",
+    "industry": "Fitness",
+    "revenue": 125000
+  },
+  {
+    "id": 19,
+    "business_name": "Riverton Auto Care",
+    "city": "Riverton",
+    "industry": "Auto Repair",
+    "revenue": 165000
+  },
+  {
+    "id": 20,
+    "business_name": "Arctic Pest Solutions",
+    "city": "Kaysville",
+    "industry": "Pest Control",
+    "revenue": 88000
+  }
+]
+
