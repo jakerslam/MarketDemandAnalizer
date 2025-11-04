@@ -46,13 +46,33 @@ def get_user_input():
     return False
 
 def display_data(filter_options):
-    if filter_options["sort_by"] == "distance":
-        print()
-    print(filter_options['num_to_display'])
+    displayRev = False
+    displayIndustry = False
     with open("../data/sample_data.json", "r") as f:
         data = json.load(f)
+    if filter_options["city"]:
+        data = [item for item in data if item["city"].lower() == filter_options["city"].lower()]
+    if filter_options["industry"]:
+        data = [item for item in data if item["industry"].lower() == filter_options["industry"].lower()]
+        displayIndustry = True
+        
+    if filter_options["sort_by"] == "distance":
+        #data = sorted(data, key=lambda item: item["distance"])
+        print("**distance sort under construction**")
+    elif filter_options["sort_by"] == "revenue":
+        data = sorted(data, key=lambda item: item["revenue"], reverse=True)
+        displayRev = True
+    elif filter_options["sort_by"] == "industry":
+        data = sorted(data, key=lambda item: item["industry"].lower())
+        displayIndustry = True
+    elif filter_options["sort_by"] == "business_name":
+        data = sorted(data, key=lambda item: item["business_name"].lower())
+
     for item in data[:filter_options['num_to_display']]:
-        print(f"{item['business_name']} — {item['city']}")
+        rev_text = f" — ${item['revenue']}" if displayRev else ""
+        industry_text = f" — {item['industry']}" if displayIndustry else ""
+        print(f"{item['business_name']} — {item['city']}{rev_text}{industry_text}")
+
 
 if __name__ == "__main__":
     main()
