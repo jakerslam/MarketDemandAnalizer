@@ -18,4 +18,9 @@ def fetch_industry_baselines():
     file_path = os.path.join(DATA_DIR, "industry_baselines.json")
     with open(file_path, "r") as f:
         return json.load(f)
-    
+
+def fetch_industry_spend():
+    file_path = os.path.join(DATA_DIR, "industry_spend_per_capita.json")
+    with open(file_path, "r") as f:
+        return json.load(f)
+        

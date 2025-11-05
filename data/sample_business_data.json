@@ -1,143 +1,98 @@
 [
-  {
-    "id": 1,
-    "business_name": "Mountain Coffee Co.",
-    "city": "Salt Lake City",
-    "industry": "Cafes",
-    "revenue": 120000
-  },
-  {
-    "id": 2,
-    "business_name": "Bee Gone Pest Control",
-    "city": "Provo",
-    "industry": "Pest Control",
-    "revenue": 85000
-  },
-  {
-    "id": 3,
-    "business_name": "Peak Fitness Gym",
-    "city": "Orem",
-    "industry": "Fitness",
-    "revenue": 200000
-  },
-  {
-    "id": 4,
-    "business_name": "Logan Auto Works",
-    "city": "Logan",
-    "industry": "Auto Repair",
-    "revenue": 175000
-  },
-  {
-    "id": 5,
-    "business_name": "Utah Yoga Loft",
-    "city": "Park City",
-    "industry": "Fitness",
-    "revenue": 95000
-  },
-  {
-    "id": 6,
-    "business_name": "Desert Brew Café",
-    "city": "St. George",
-    "industry": "Cafes",
-    "revenue": 110000
-  },
-  {
-    "id": 7,
-    "business_name": "Canyon Pest Management",
-    "city": "Cedar City",
-    "industry": "Pest Control",
-    "revenue": 72000
-  },
-  {
-    "id": 8,
-    "business_name": "EcoTech Auto",
-    "city": "Ogden",
-    "industry": "Auto Repair",
-    "revenue": 160000
-  },
-  {
-    "id": 9,
-    "business_name": "Layton Fitness Center",
-    "city": "Layton",
-    "industry": "Fitness",
-    "revenue": 130000
-  },
-  {
-    "id": 10,
-    "business_name": "Sunrise Café",
-    "city": "Sandy",
-    "industry": "Cafes",
-    "revenue": 115000
-  },
-  {
-    "id": 11,
-    "business_name": "Top Gear Auto",
-    "city": "Bountiful",
-    "industry": "Auto Repair",
-    "revenue": 185000
-  },
-  {
-    "id": 12,
-    "business_name": "Hive Pest Pros",
-    "city": "Herriman",
-    "industry": "Pest Control",
-    "revenue": 91000
-  },
-  {
-    "id": 13,
-    "business_name": "Pure Grounds Coffee",
-    "city": "Lehi",
-    "industry": "Cafes",
-    "revenue": 99000
-  },
-  {
-    "id": 14,
-    "business_name": "Titan Fitness",
-    "city": "Spanish Fork",
-    "industry": "Fitness",
-    "revenue": 145000
-  },
-  {
-    "id": 15,
-    "business_name": "Quick Fix Auto",
-    "city": "Tooele",
-    "industry": "Auto Repair",
-    "revenue": 150000
-  },
-  {
-    "id": 16,
-    "business_name": "Bug Off Exterminators",
-    "city": "Springville",
-    "industry": "Pest Control",
-    "revenue": 78000
-  },
-  {
-    "id": 17,
-    "business_name": "Ridge View Café",
-    "city": "West Jordan",
-    "industry": "Cafes",
-    "revenue": 105000
-  },
-  {
-    "id": 18,
-    "business_name": "American Fork Gym",
-    "city": "American Fork",
-    "industry": "Fitness",
-    "revenue": 125000
-  },
-  {
-    "id": 19,
-    "business_name": "Riverton Auto Care",
-    "city": "Riverton",
-    "industry": "Auto Repair",
-    "revenue": 165000
-  },
-  {
-    "id": 20,
-    "business_name": "Arctic Pest Solutions",
-    "city": "Kaysville",
-    "industry": "Pest Control",
-    "revenue": 88000
-  }
+  { "business_name": "Mountain Coffee Co.", "city": "Salt Lake City", "industry": "Cafes", "revenue": 120000 },
+  { "business_name": "Salt Lake Beans", "city": "Salt Lake City", "industry": "Cafes", "revenue": 180000 },
+  { "business_name": "Hive Roast", "city": "Salt Lake City", "industry": "Cafes", "revenue": 90000 },
+  { "business_name": "Bee Gone Pest Control", "city": "Provo", "industry": "Pest Control", "revenue": 160000 },
+  { "business_name": "Provo Pest Pros", "city": "Provo", "industry": "Pest Control", "revenue": 145000 },
+  { "business_name": "Spring Clean Exterminators", "city": "Provo", "industry": "Pest Control", "revenue": 130000 },
+  { "business_name": "Pure Grounds Coffee", "city": "Lehi", "industry": "Cafes", "revenue": 110000 },
+  { "business_name": "Lehi Latte Lab", "city": "Lehi", "industry": "Cafes", "revenue": 95000 },
+  { "business_name": "Canyon Fitness", "city": "Lehi", "industry": "Fitness", "revenue": 250000 },
+  { "business_name": "Orem Family Fitness", "city": "Orem", "industry": "Fitness", "revenue": 220000 },
+  { "business_name": "Orem Auto Works", "city": "Orem", "industry": "Auto Repair", "revenue": 180000 },
+  { "business_name": "Provo Auto Garage", "city": "Provo", "industry": "Auto Repair", "revenue": 200000 },
+  { "business_name": "Logan Coffee House", "city": "Logan", "industry": "Cafes", "revenue": 85000 },
+  { "business_name": "Logan Fitness Gym", "city": "Logan", "industry": "Fitness", "revenue": 150000 },
+  { "business_name": "St. George Coffee Co.", "city": "St. George", "industry": "Cafes", "revenue": 130000 },
+  { "business_name": "Desert Brew Café", "city": "St. George", "industry": "Cafes", "revenue": 95000 },
+  { "business_name": "St. George Auto Care", "city": "St. George", "industry": "Auto Repair", "revenue": 210000 },
+  { "business_name": "Uintah Trail Pest Control", "city": "Ogden", "industry": "Pest Control", "revenue": 125000 },
+  { "business_name": "Ogden Body Gym", "city": "Ogden", "industry": "Fitness", "revenue": 190000 },
+  { "business_name": "Bountiful Cafe", "city": "Bountiful", "industry": "Cafes", "revenue": 75000 },
+  { "business_name": "Bountiful Fit", "city": "Bountiful", "industry": "Fitness", "revenue": 140000 },
+  { "business_name": "Herriman Pest Shield", "city": "Herriman", "industry": "Pest Control", "revenue": 170000 },
+  { "business_name": "Herriman Java Hut", "city": "Herriman", "industry": "Cafes", "revenue": 80000 },
+  { "business_name": "Spanish Fork Strength Center", "city": "Spanish Fork", "industry": "Fitness", "revenue": 120000 },
+  { "business_name": "Spanish Fork Pest Masters", "city": "Spanish Fork", "industry": "Pest Control", "revenue": 155000 },
+  { "business_name": "Park City Grind", "city": "Park City", "industry": "Cafes", "revenue": 200000 },
+  { "business_name": "Park City Elite Fitness", "city": "Park City", "industry": "Fitness", "revenue": 320000 },
+  { "business_name": "Cedar Coffee Shop", "city": "Cedar City", "industry": "Cafes", "revenue": 70000 },
+  { "business_name": "Cedar Auto Repair", "city": "Cedar City", "industry": "Auto Repair", "revenue": 160000 },
+  { "business_name": "Provo Smile Dental", "city": "Provo", "industry": "Dentistry", "revenue": 450000 },
+  { "business_name": "Orem Family Dental", "city": "Orem", "industry": "Dentistry", "revenue": 420000 },
+  { "business_name": "Salt Lake Pediatric Dental", "city": "Salt Lake City", "industry": "Dentistry", "revenue": 500000 },
+  { "business_name": "St. George Family Dental", "city": "St. George", "industry": "Dentistry", "revenue": 390000 },
+  { "business_name": "Lehi Landscaping Pro", "city": "Lehi", "industry": "Landscaping", "revenue": 165000 },
+  { "business_name": "Orem Lawn Experts", "city": "Orem", "industry": "Landscaping", "revenue": 140000 },
+  { "business_name": "Salt Lake Lawn Care", "city": "Salt Lake City", "industry": "Landscaping", "revenue": 175000 },
+  { "business_name": "Provo Lawn Stars", "city": "Provo", "industry": "Landscaping", "revenue": 150000 },
+  { "business_name": "Provo Child Care Center", "city": "Provo", "industry": "Childcare", "revenue": 300000 },
+  { "business_name": "Lehi Learning Kids", "city": "Lehi", "industry": "Childcare", "revenue": 280000 },
+  { "business_name": "Salt Lake Tech IT", "city": "Salt Lake City", "industry": "Tech IT Services", "revenue": 600000 },
+  { "business_name": "Lehi Startup IT", "city": "Lehi", "industry": "Tech IT Services", "revenue": 520000 },
+  { "business_name": "Provo Realty Co.", "city": "Provo", "industry": "Real Estate Offices", "revenue": 800000 },
+  { "business_name": "Salt Lake Realty Group", "city": "Salt Lake City", "industry": "Real Estate Offices", "revenue": 900000 },
+  { "business_name": "Orem Homes Realty", "city": "Orem", "industry": "Real Estate Offices", "revenue": 700000 },
+  { "business_name": "Wasatch Brew Café", "city": "Salt Lake City", "industry": "Cafes", "revenue": 150000 },
+  { "business_name": "Peak Bean Co.", "city": "Salt Lake City", "industry": "Cafes", "revenue": 175000 },
+  { "business_name": "Hive Fitness Center", "city": "Salt Lake City", "industry": "Fitness", "revenue": 300000 },
+  { "business_name": "Temple View Dental", "city": "Salt Lake City", "industry": "Dentistry", "revenue": 550000 },
+  { "business_name": "Salt Lake Pest Defense", "city": "Salt Lake City", "industry": "Pest Control", "revenue": 220000 },
+  { "business_name": "Provo Beans & Brews", "city": "Provo", "industry": "Cafes", "revenue": 120000 },
+  { "business_name": "Wasatch Peak Fitness", "city": "Provo", "industry": "Fitness", "revenue": 250000 },
+  { "business_name": "Happy Smiles Dental", "city": "Provo", "industry": "Dentistry", "revenue": 430000 },
+  { "business_name": "Pro Pest Eliminators", "city": "Provo", "industry": "Pest Control", "revenue": 170000 },
+  { "business_name": "Provo IT Experts", "city": "Provo", "industry": "Tech IT Services", "revenue": 600000 },
+  { "business_name": "Orem Java Spot", "city": "Orem", "industry": "Cafes", "revenue": 95000 },
+  { "business_name": "Orem Tech Hub", "city": "Orem", "industry": "Tech IT Services", "revenue": 510000 },
+  { "business_name": "Family Fitness Works", "city": "Orem", "industry": "Fitness", "revenue": 210000 },
+  { "business_name": "Bright Dental Care", "city": "Orem", "industry": "Dentistry", "revenue": 480000 },
+  { "business_name": "Orem Pest Protect", "city": "Orem", "industry": "Pest Control", "revenue": 160000 },
+  { "business_name": "Logan Fitness Pro", "city": "Logan", "industry": "Fitness", "revenue": 150000 },
+  { "business_name": "Logan Smiles Dentistry", "city": "Logan", "industry": "Dentistry", "revenue": 340000 },
+  { "business_name": "Northern Utah Pest Control", "city": "Logan", "industry": "Pest Control", "revenue": 120000 },
+  { "business_name": "Logan Code & IT Solutions", "city": "Logan", "industry": "Tech IT Services", "revenue": 450000 },
+  { "business_name": "Logan Grounds Café", "city": "Logan", "industry": "Cafes", "revenue": 105000 },
+  { "business_name": "St. George Grindhouse", "city": "St. George", "industry": "Cafes", "revenue": 160000 },
+  { "business_name": "St. George Strong Gym", "city": "St. George", "industry": "Fitness", "revenue": 280000 },
+  { "business_name": "Southern Utah Dental", "city": "St. George", "industry": "Dentistry", "revenue": 390000 },
+  { "business_name": "Red Rock Exterminators", "city": "St. George", "industry": "Pest Control", "revenue": 185000 },
+  { "business_name": "Desert Tech Systems", "city": "St. George", "industry": "Tech IT Services", "revenue": 520000 },
+  { "business_name": "Ogden Coffee Bar", "city": "Ogden", "industry": "Cafes", "revenue": 100000 },
+  { "business_name": "Ogden Strong Fitness", "city": "Ogden", "industry": "Fitness", "revenue": 180000 },
+  { "business_name": "Ogden Smile Center", "city": "Ogden", "industry": "Dentistry", "revenue": 405000 },
+  { "business_name": "Frontier Pest Co.", "city": "Ogden", "industry": "Pest Control", "revenue": 140000 },
+  { "business_name": "Ogden IT Pros", "city": "Ogden", "industry": "Tech IT Services", "revenue": 480000 },
+  { "business_name": "Lehi Brew Bar", "city": "Lehi", "industry": "Cafes", "revenue": 115000 },
+  { "business_name": "Lehi Fit Life", "city": "Lehi", "industry": "Fitness", "revenue": 280000 },
+  { "business_name": "Lehi Smiles Clinic", "city": "Lehi", "industry": "Dentistry", "revenue": 460000 },
+  { "business_name": "Utah Valley Exterminators", "city": "Lehi", "industry": "Pest Control", "revenue": 150000 },
+  { "business_name": "Lehi Cloud Tech", "city": "Lehi", "industry": "Tech IT Services", "revenue": 570000 },
+  { "business_name": "Bountiful Coffee Spot", "city": "Bountiful", "industry": "Cafes", "revenue": 85000 },
+  { "business_name": "Bountiful Dental Studio", "city": "Bountiful", "industry": "Dentistry", "revenue": 390000 },
+  { "business_name": "Bountiful Gym Club", "city": "Bountiful", "industry": "Fitness", "revenue": 150000 },
+  { "business_name": "Bountiful Bug Defense", "city": "Bountiful", "industry": "Pest Control", "revenue": 130000 },
+  { "business_name": "Bountiful TechWorks", "city": "Bountiful", "industry": "Tech IT Services", "revenue": 430000 },
+  { "business_name": "Herriman Coffee Works", "city": "Herriman", "industry": "Cafes", "revenue": 90000 },
+  { "business_name": "Herriman Body Fitness", "city": "Herriman", "industry": "Fitness", "revenue": 190000 },
+  { "business_name": "Herriman Pediatric Dental", "city": "Herriman", "industry": "Dentistry", "revenue": 410000 },
+  { "business_name": "Herriman Innovative Pest", "city": "Herriman", "industry": "Pest Control", "revenue": 175000 },
+  { "business_name": "Herriman Tech Solutions", "city": "Herriman", "industry": "Tech IT Services", "revenue": 520000 },
+  { "business_name": "Spanish Fork Brew House", "city": "Spanish Fork", "industry": "Cafes", "revenue": 95000 },
+  { "business_name": "Spanish Fork Strong Gym", "city": "Spanish Fork", "industry": "Fitness", "revenue": 170000 },
+  { "business_name": "Spanish Fork Dental", "city": "Spanish Fork", "industry": "Dentistry", "revenue": 350000 },
+  { "business_name": "SF Pest Defense", "city": "Spanish Fork", "industry": "Pest Control", "revenue": 155000 },
+  { "business_name": "Spanish Fork IT Crew", "city": "Spanish Fork", "industry": "Tech IT Services", "revenue": 460000 }
 ]
+
 

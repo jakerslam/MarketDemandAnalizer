@@ -1,6 +1,5 @@
 from analyzer import count_by_industry, calc_demand_score, count_population_per_industry
 from data_sources import fetch_business_data, fetch_population_data, fetch_industry_baselines
-import utils
 
 def main():
     filter_options = set_filter_options()
@@ -83,7 +82,10 @@ def print_market_summary(filter_options,filtered_data):
     biz_count = len(filtered_data)
     industry_baseline = baselines.get(filter_options["industry"], baselines["Default"])
 
-    real_ppb = population / biz_count if biz_count and population else 1
+    if biz_count == 0:
+        real_ppb = float("inf")
+    else:
+        real_ppb = population / biz_count
     score = calc_demand_score(real_ppb, industry_baseline)
     rating = classify_market(score)
 
