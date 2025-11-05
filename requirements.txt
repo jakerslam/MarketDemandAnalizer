@@ -1,2 +1,3 @@
-
-- [ ] Enable
+# Market Demand Analyzer - Python Dependencies
+# This project uses only Python standard library modules
+# No external dependencies required
