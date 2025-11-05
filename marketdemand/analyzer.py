@@ -21,3 +21,8 @@ def calc_demand_score(real_people_per_biz,ideal_people_per_biz):
         return float('inf')  # Avoid divide-by-zero, treat as massive opportunity
     demand_score = real_people_per_biz/ideal_people_per_biz
     return demand_score
+
+def calculate_tam(population, spend_per_capita)
+    pass
+
+
