@@ -9,7 +9,8 @@ def main():
 def set_filter_options():
     filter_options_num = int(input("set the number of results to display: "))
     filter_options_sort_by = input("Enter '1' to sort by business name, '2' to sort by revenue, '3' to sort by industry, '4' to sort by distance ")
-    filter_options_city = input("Enter city/cities (comma separated, or leave blank for all): ")
+    cities_input = input("Enter city/cities (comma separated, or leave blank for all): ")
+    filter_options_city = [c.strip().title() for c in cities_input.split(",")] if cities_input else []
     filter_options_industry = input("set the industry to display: ")
     sort_by_dictionary = {
         "1" : "business_name",
@@ -19,7 +20,7 @@ def set_filter_options():
     }
     filter_options = {
     "num_to_display": filter_options_num,
-    "city": filter_options_city,
+    "cities": filter_options_city,
     "industry": filter_options_industry,
     "sort_by": sort_by_dictionary[filter_options_sort_by]
     }
@@ -30,7 +31,7 @@ def show_filters(filters):
     print(f"""
 Active Filters:
 ---------------
-City: {filters['city']}
+City: {filters['cities']}
 Industry: {filters['industry']}
 Sort by: {filters['sort_by']}
 Results to display: {filters['num_to_display']}
@@ -50,8 +51,8 @@ def display_data(filter_options):
     #open file#
     data = load_data()
     #apply filters#
-    if filter_options["city"]:
-        data = [item for item in data if item["city"].lower() == filter_options["city"].lower()]
+    if filter_options["cities"]:
+        data = [item for item in data if item["city"] in filter_options["cities"]]
     if filter_options["industry"]:
         data = [item for item in data if item["industry"].lower() == filter_options["industry"].lower()]
         display_options["industry"] = True
@@ -78,22 +79,24 @@ def print_market_summary(filter_options,filtered_data):
             # analytics summary
     pop_data = fetch_population_data()
     baselines = fetch_industry_baselines()
-    population = pop_data.get(filter_options["city"].title(), None)
+    total_population = 0
+    for city in filter_options["cities"]:
+        total_population += pop_data.get(city.title(), 0)
     biz_count = len(filtered_data)
     industry_baseline = baselines.get(filter_options["industry"], baselines["Default"])
 
     if biz_count == 0:
         real_ppb = float("inf")
     else:
-        real_ppb = population / biz_count
+        real_ppb = total_population / biz_count
     score = calc_demand_score(real_ppb, industry_baseline)
     rating = classify_market(score)
 
     print("\nMarket Demand Summary")
     print("----------------------")
-    print(f"City: {filter_options['city']}")
+    print(f"Cities: {filter_options['cities']}")
     print(f"Industry: {filter_options['industry']}")
-    print(f"Population: {population:,}")
+    print(f"Population: {total_population:,}")
     print(f"Businesses: {biz_count}")
     print(f"People per Business: {real_ppb:,.0f}")
     print(f"Ideal per Business: {industry_baseline:,}")
