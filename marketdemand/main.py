@@ -9,7 +9,7 @@ def main():
 def set_filter_options():
     filter_options_num = int(input("set the number of results to display: "))
     filter_options_sort_by = input("Enter '1' to sort by business name, '2' to sort by revenue, '3' to sort by industry, '4' to sort by distance ")
-    filter_options_city = input("set the city to display: ")
+    filter_options_city = input("Enter city/cities (comma separated, or leave blank for all): ")
     filter_options_industry = input("set the industry to display: ")
     sort_by_dictionary = {
         "1" : "business_name",
