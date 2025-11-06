@@ -22,7 +22,11 @@ def calc_demand_score(real_people_per_biz,ideal_people_per_biz):
     demand_score = real_people_per_biz/ideal_people_per_biz
     return demand_score
 
-def calculate_tam(population, spend_per_capita)
-    pass
+def calculate_tam(population, spend_per_capita):
+    return population * spend_per_capita
 
-
+def calculate_current_revenue(businesses):
+    total_revenue = 0
+    for item in businesses:
+        total_revenue += item["revenue"]
+    return total_revenue
