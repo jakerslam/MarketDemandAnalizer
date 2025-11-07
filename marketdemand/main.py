@@ -1,131 +1,173 @@
-from analyzer import count_by_industry, calc_demand_score, count_population_per_industry
-from data_sources import fetch_business_data, fetch_population_data, fetch_industry_baselines
+import analyzer
+import data_sources
+import json
+
+# ============================
+# MAIN PROGRAM ENTRY POINT
+# ============================
 
 def main():
+    print("=== Market Demand Analyzer ===")
+
+    # 1. Collect filter options from the user
+    # ---------------------------------------
     filter_options = set_filter_options()
-    if get_user_input():
-        display_data(filter_options)
 
-def set_filter_options():
-    filter_options_num = int(input("set the number of results to display: "))
-    filter_options_sort_by = input("Enter '1' to sort by business name, '2' to sort by revenue, '3' to sort by industry, '4' to sort by distance ")
-    cities_input = input("Enter city/cities (comma separated, or leave blank for all): ")
-    filter_options_city = [c.strip().title() for c in cities_input.split(",")] if cities_input else []
-    filter_options_industry = input("set the industry to display: ")
-    sort_by_dictionary = {
-        "1" : "business_name",
-        "2" : "revenue",
-        "3" : "industry",
-        "4" : "distance"
-    }
-    filter_options = {
-    "num_to_display": filter_options_num,
-    "cities": filter_options_city,
-    "industry": filter_options_industry,
-    "sort_by": sort_by_dictionary[filter_options_sort_by]
-    }
-    show_filters(filter_options)
-    return filter_options
+    # 2. Load raw data
+    # ---------------------------------------
+    business_data = load_business_data()
+    population_data = data_sources.fetch_population_data()
 
-def show_filters(filters):
-    print(f"""
-Active Filters:
----------------
-City: {filters['cities']}
-Industry: {filters['industry']}
-Sort by: {filters['sort_by']}
-Results to display: {filters['num_to_display']}
-""")
+    # NOTE:
+    # For now, we assume industry baselines exist in JSON.
+    # Example JSON:
+    # {
+    #   "pest control": {"spend_per_capita": 80, "ideal_ppb": 2000}
+    # }
+    industry_baselines = load_industry_baselines()
 
-def get_user_input():
-    display = input("Do you want to dsiplay data? y/n: ")
-    if display == 'y':
-        return True
-    return False
+    industry = filter_options["industry"].lower()
+    if industry not in industry_baselines:
+        print(f"\n⚠️  No industry baseline found for '{industry}'.")
+        print("    Add it to baseline JSON before running full analysis.\n")
+        return
 
-def display_data(filter_options):
-    display_options = {
-        "revenue" : False,
-        "industry" : False,
-    }
-    #open file#
-    data = load_data()
-    #apply filters#
-    if filter_options["cities"]:
-        data = [item for item in data if item["city"] in filter_options["cities"]]
-    if filter_options["industry"]:
-        data = [item for item in data if item["industry"].lower() == filter_options["industry"].lower()]
-        display_options["industry"] = True
-    #apply sorts#
-    if filter_options["sort_by"] == "distance":
-        #data = sorted(data, key=lambda item: item["distance"])
-        print("**distance sort under construction**")
-    elif filter_options["sort_by"] == "revenue":
-        data = sorted(data, key=lambda item: item["revenue"], reverse=True)
-        display_options["revenue"] = True
-    elif filter_options["sort_by"] == "industry":
-        data = sorted(data, key=lambda item: item["industry"].lower())
-        display_options["industry"] = True
-    elif filter_options["sort_by"] == "business_name":
-        data = sorted(data, key=lambda item: item["business_name"].lower())
-    #slice data to correct length of items#
-    data = data[:filter_options['num_to_display']]
-    #render data#
-    render_results(data,display_options)
-    if filter_options["industry"]:
-        print_market_summary(filter_options,data)
+    spend_per_capita = industry_baselines[industry]["spend_per_capita"]
+    ideal_ppb = industry_baselines[industry]["ideal_ppb"]
 
-def print_market_summary(filter_options,filtered_data):
-            # analytics summary
-    pop_data = fetch_population_data()
-    baselines = fetch_industry_baselines()
-    total_population = 0
-    for city in filter_options["cities"]:
-        total_population += pop_data.get(city.title(), 0)
-    biz_count = len(filtered_data)
-    industry_baseline = baselines.get(filter_options["industry"], baselines["Default"])
+    # 3. Filter and sort the business data (UI-ready results)
+    # ---------------------------------------
+    filtered_list = filter_businesses(business_data, filter_options)
+    sorted_list = sort_businesses(filtered_list, filter_options)
+    limited_list = sorted_list[:filter_options["num_to_display"]]
 
-    if biz_count == 0:
-        real_ppb = float("inf")
-    else:
-        real_ppb = total_population / biz_count
-    score = calc_demand_score(real_ppb, industry_baseline)
-    rating = classify_market(score)
+    # 4. Perform full market analysis (TAM, % remaining, demand score)
+    # ---------------------------------------
+    analysis_results = analyzer.analyze_market(
+        business_data=filtered_list,
+        population_data=population_data,
+        filters=filter_options,
+        spend_per_capita=spend_per_capita,
+        ideal_people_per_business=ideal_ppb
+    )
 
-    print("\nMarket Demand Summary")
-    print("----------------------")
-    print(f"Cities: {filter_options['cities']}")
-    print(f"Industry: {filter_options['industry']}")
-    print(f"Population: {total_population:,}")
-    print(f"Businesses: {biz_count}")
-    print(f"People per Business: {real_ppb:,.0f}")
-    print(f"Ideal per Business: {industry_baseline:,}")
-    print(f"Demand Score: {score:.2f}x ({rating})")
+    # 5. Render final output (business list + analysis summary)
+    # ---------------------------------------
+    render_results(limited_list, analysis_results)
 
 
-def classify_market(score):
-    if score == float("inf"):
-        return "No competition yet ✅ (blue ocean)"
-    if score > 3:
-        return "High Opportunity ✅"
-    elif score > 1:
-        return "Moderate Opportunity ⚠️"
-    elif score > 0.5:
-        return "Crowded 🟠"
-    else:
-        return "Saturated ❌"
+# ============================
+# SUPPORTING FUNCTIONS
+# ============================
 
-def load_data():
-    data = fetch_business_data()
+def load_business_data():
+    """Loads your business dataset from file."""
+    with open("../data/sample_business_data.json", "r") as f:
+        return json.load(f)
+
+
+def load_industry_baselines():
+    """Loads industry baseline (ideal_ppb, spend_per_capita)."""
+    with open("../data/industry_baselines.json", "r") as f:
+        return json.load(f)
+
+
+# ---------------------------------------
+# FILTER + SORT HELPERS (UI LAYER)
+# ---------------------------------------
+
+def filter_businesses(business_data, filters):
+    """Filter by cities + industry."""
+    cities = filters["cities"]
+    industry = filters["industry"]
+
+    filtered = []
+    for b in business_data:
+        city_ok = (not cities) or (b["city"].lower() in [c.lower() for c in cities])
+        industry_ok = (not industry) or (b["industry"].lower() == industry.lower())
+
+        if city_ok and industry_ok:
+            filtered.append(b)
+
+    return filtered
+
+
+def sort_businesses(data, filters):
+    """Sort based on user’s selected field."""
+    sort_by = filters["sort_by"]
+
+    # NOTE: You removed `display_options`, but leave this comment so you 
+    #       can re-add display toggles later if you want to show/hide revenue, industry, etc.
+    # display_options = { "revenue": False, "industry": False }
+
+    if sort_by == "revenue":
+        return sorted(data, key=lambda x: x["revenue"], reverse=True)
+
+    elif sort_by == "industry":
+        return sorted(data, key=lambda x: x["industry"].lower())
+
+    elif sort_by == "business_name":
+        return sorted(data, key=lambda x: x["business_name"].lower())
+
+    elif sort_by == "distance":
+        print("** distance sort not implemented **")
+        return data
+
     return data
 
-# render results based on filter and sort settings
-def render_results(data, display_options):
-    for item in data:
-        rev_text = f" — ${item['revenue']}" if display_options["revenue"] else ""
-        industry_text = f" — {item['industry']}" if display_options["industry"] else ""
-        print(f"{item['business_name']} — {item['city']}{rev_text}{industry_text}")
-        
+
+# ---------------------------------------
+# USER INPUT FOR FILTERING
+# ---------------------------------------
+
+def set_filter_options():
+    """Collect basic filter options for the MVP."""
+    num = int(input("How many results to display? "))
+    industry = input("Industry: ").strip()
+    city_input = input("Cities (comma separated, blank for all): ").strip()
+
+    cities = [c.strip() for c in city_input.split(",")] if city_input else []
+
+    sort_by = input("Sort by (1=name, 2=revenue, 3=industry, 4=distance): ").strip()
+    sort_map = {
+        "1": "business_name",
+        "2": "revenue",
+        "3": "industry",
+        "4": "distance"
+    }
+
+    return {
+        "num_to_display": num,
+        "industry": industry,
+        "cities": cities,
+        "sort_by": sort_map.get(sort_by, "business_name")
+    }
+
+
+# ---------------------------------------
+# RENDERING OUTPUT (UI)
+# ---------------------------------------
+
+def render_results(business_list, analysis):
+    """Prints both the business results and the market analysis summary."""
+
+    print("\n=== BUSINESS RESULTS ===")
+    for b in business_list:
+        print(f"{b['business_name']} — {b['city']} — {b['industry']} — ${b['revenue']}")
+
+    print("\n=== MARKET ANALYSIS ===")
+    print(f"Population: {analysis['population']}")
+    print(f"TAM: ${analysis['tam']:,}")
+    print(f"Current Revenue: ${analysis['current_revenue']:,}")
+    print(f"Remaining TAM: ${analysis['remaining_tam']:,}")
+    print(f"Remaining TAM %: {analysis['remaining_pct']*100:.2f}%")
+    print(f"Competition Score: {analysis['competition_score']:.2f}")
+    print(f"Demand Score: {analysis['demand_score']:.2f}")
+
+
+# ============================
+# RUN PROGRAM
+# ============================
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,49 @@
 
 
+###
+# Main interface function to main
+###
+def analyze_market(business_data, population_data, filters, spend_per_capita, ideal_people_per_business):
+    # 1. Filter businesses by industry & cities (analyzer should do this)
+    filtered_businesses = [
+        b for b in business_data 
+        if (filters["industry"].lower() == b["industry"].lower())
+        and (not filters["cities"] or b["city"].lower() in [c.lower() for c in filters["cities"]])
+    ]
+    # 2. Sum population for selected cities
+    total_population = 0
+    for city in filters["cities"]:
+        total_population += population_data.get(city.title(), 0)
+    # 3. Compute TAM
+    tam = calculate_tam(total_population, spend_per_capita)
+    # 4. Compute existing revenue in the region
+    current_rev = calculate_current_revenue(filtered_businesses)
+    # 5. Compute remaining TAM and percentage
+    remaining_tam = calculate_remaining_tam(tam, current_rev)
+    remaining_pct = calculate_remaining_tam_pct(remaining_tam, tam)
+    # 6. Compute real people-per-business
+    if len(filtered_businesses) == 0:
+        real_ppb = float("inf")
+    else:
+        real_ppb = total_population / len(filtered_businesses)
+    # 7. Compute competition score
+    competition_score = calculate_competition_score(real_ppb, ideal_people_per_business)
+    # 8. Final demand score
+    demand_score = calc_demand_score(competition_score, remaining_pct)
+    # 9. Return all results
+    return {
+        "tam": tam,
+        "current_revenue": current_rev,
+        "remaining_tam": remaining_tam,
+        "remaining_pct": remaining_pct,
+        "competition_score": competition_score,
+        "demand_score": demand_score,
+        "businesses": filtered_businesses,
+        "population": total_population,
+        "filters": filters
+    }
+
+
 def count_by_industry(business_data):
     industry_counts = {}
     for item in business_data:
