@@ -49,3 +49,6 @@ def calculate_current_revenue(businesses):
     for item in businesses:
         total_revenue += item["revenue"]
     return total_revenue
+
+def calculate_remaining_tam(tam, current_revenue):
+    return tam - current_revenue
