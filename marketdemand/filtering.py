@@ -19,7 +19,7 @@ def sort_businesses(data, filters):
   sort_by = filters["sort_by"]
 
   # NOTE: removed `display_options`, but 
-  #       may re-add display toggles later if you want to show/hide revenue, industry, etc.
+  # may re-add display toggles later to show/hide revenue, industry, etc.
   # display_options = { "revenue": False, "industry": False }
 
   if sort_by == "revenue":
