@@ -119,17 +119,13 @@ def calculate_competition_score(real_ppb, ideal_ppb):
 
 
 def calc_demand_score(competition_score, remaining_tam_pct, tam_weight=0.5):
-    
     # Normalize remaining TAM % to 0–100
     tam_score = remaining_tam_pct * 100
-    
     # Normalize competition score to 0–100 using logistic-like compression
     if competition_score == float("inf"):
         comp_score_norm = 100
     else:
         comp_score_norm = 100 * (1 - (1 / (1 + competition_score)))
-    
     # Blend them together using tam_weight
     demand_0_to_100 = (tam_weight * tam_score) + ((1 - tam_weight) * comp_score_norm)
-    
     return demand_0_to_100
