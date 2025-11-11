@@ -1,0 +1,57 @@
+{
+  "cafes": {
+    "ideal_ppb": 2000,
+    "spend_per_capita": 350,
+    "tam_weight": 0.5
+  },
+  "pest control": {
+    "ideal_ppb": 15000,
+    "spend_per_capita": 45,
+    "tam_weight": 0.6
+  },
+  "fitness": {
+    "ideal_ppb": 5000,
+    "spend_per_capita": 200,
+    "tam_weight": 0.55
+  },
+  "auto repair": {
+    "ideal_ppb": 7000,
+    "spend_per_capita": 300,
+    "tam_weight": 0.5
+  },
+  "dentistry": {
+    "ideal_ppb": 5000,
+    "spend_per_capita": 400,
+    "tam_weight": 0.65
+  },
+  "childcare": {
+    "ideal_ppb": 8000,
+    "spend_per_capita": 1200,
+    "tam_weight": 0.7
+  },
+  "tech it services": {
+    "ideal_ppb": 30000,
+    "spend_per_capita": 150,
+    "tam_weight": 0.5
+  },
+  "real estate offices": {
+    "ideal_ppb": 15000,
+    "spend_per_capita": 90,
+    "tam_weight": 0.4
+  },
+  "landscaping": {
+    "ideal_ppb": 25000,
+    "spend_per_capita": 120,
+    "tam_weight": 0.5
+  },
+  "restaurants": {
+    "ideal_ppb": 2000,
+    "spend_per_capita": 1500,
+    "tam_weight": 0.6
+  },
+  "default": {
+    "ideal_ppb": 8000,
+    "spend_per_capita": 200,
+    "tam_weight": 0.5
+  }
+}
