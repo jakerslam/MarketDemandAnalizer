@@ -1,5 +1,6 @@
 
 # analyzer.py
+import math
 
 def analyze_market(business_data, population_data, filters, industry_params):
     """
@@ -110,22 +111,32 @@ def calculate_remaining_tam_pct(remaining, tam):
 
 
 def calculate_competition_score(real_ppb, ideal_ppb):
-    """Competitive pressure = real_ppb / ideal_ppb."""
     if ideal_ppb == 0:
-        return float("inf")
-    if real_ppb == float("inf"):
-        return float("inf")
-    return real_ppb / ideal_ppb
+        return float('inf')
+    ratio = real_ppb / ideal_ppb
+    # avoid log(0)
+    if ratio <= 0:
+        return -2  # extremely empty market
+    return math.log(ratio, 2)
 
 
 def calc_demand_score(competition_score, remaining_tam_pct, tam_weight=0.5):
-    # Normalize remaining TAM % to 0–100
+    """
+    Final demand score (0–100).
+    Combines:
+      • remaining TAM percentage
+      • competition opportunity score (inverse of competition saturation)
+    """
+    # 1. Remaining TAM -> 0–100
     tam_score = remaining_tam_pct * 100
-    # Normalize competition score to 0–100 using logistic-like compression
+    # 2. Convert competition score (log base 2) into opportunity
     if competition_score == float("inf"):
-        comp_score_norm = 100
+        opp_score = 5  # maximum opportunity (no competitors)
     else:
-        comp_score_norm = 100 * (1 - (1 / (1 + competition_score)))
-    # Blend them together using tam_weight
-    demand_0_to_100 = (tam_weight * tam_score) + ((1 - tam_weight) * comp_score_norm)
-    return demand_0_to_100
+        opp_score = max(0, 5 - competition_score)
+    # 3. Normalize to 0–100
+    opp_score_norm = (opp_score / 5) * 100
+    # 4. Weighted blend
+    demand_score = (tam_weight * tam_score) + ((1 - tam_weight) * opp_score_norm)
+    return demand_score
+
