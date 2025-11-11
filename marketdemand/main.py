@@ -1,75 +1,49 @@
+from data_sources import (
+    fetch_business_data,
+    fetch_population_data,
+    fetch_industry_data
+)
 import analyzer
-import data_sources
 import json
 
-# ============================
-# MAIN PROGRAM ENTRY POINT
-# ============================
 
 def main():
     print("=== Market Demand Analyzer ===")
 
-    # 1. Collect filter options from the user
-    # ---------------------------------------
+    # 1. Collect filter options
     filter_options = set_filter_options()
 
-    # 2. Load raw data
-    # ---------------------------------------
-    business_data = load_business_data()
-    population_data = data_sources.fetch_population_data()
+    # 2. Load raw datasets
+    business_data = fetch_business_data()
+    population_data = fetch_population_data()
+    industry_data = fetch_industry_data()
 
-    # NOTE:
-    # For now, we assume industry baselines exist in JSON.
-    # Example JSON:
-    # {
-    #   "pest control": {"spend_per_capita": 80, "ideal_ppb": 2000}
-    # }
-    industry_baselines = load_industry_baselines()
+    # 3. Fetch unified industry params
+    industry_key = filter_options["industry"].lower()
 
-    industry = filter_options["industry"].lower()
-    if industry not in industry_baselines:
-        print(f"\n⚠️  No industry baseline found for '{industry}'.")
-        print("    Add it to baseline JSON before running full analysis.\n")
+    if industry_key not in industry_data:
+        print(f"\n⚠️ Industry '{industry_key}' not found in industry_data.json.")
         return
 
-    spend_per_capita = industry_baselines[industry]["spend_per_capita"]
-    ideal_ppb = industry_baselines[industry]["ideal_ppb"]
+    industry_params = industry_data[industry_key]
 
-    # 3. Filter and sort the business data (UI-ready results)
-    # ---------------------------------------
+    # 4. Filter and sort businesses (UI layer)
     filtered_list = filter_businesses(business_data, filter_options)
     sorted_list = sort_businesses(filtered_list, filter_options)
     limited_list = sorted_list[:filter_options["num_to_display"]]
 
-    # 4. Perform full market analysis (TAM, % remaining, demand score)
-    # ---------------------------------------
+    # 5. Full market analysis (now uses unified industry_params)
     analysis_results = analyzer.analyze_market(
         business_data=filtered_list,
         population_data=population_data,
         filters=filter_options,
-        spend_per_capita=spend_per_capita,
-        ideal_people_per_business=ideal_ppb
+        industry_params=industry_params
     )
 
     # 5. Render final output (business list + analysis summary)
     # ---------------------------------------
     render_results(limited_list, analysis_results)
 
-
-# ============================
-# SUPPORTING FUNCTIONS
-# ============================
-
-def load_business_data():
-    """Loads your business dataset from file."""
-    with open("../data/sample_business_data.json", "r") as f:
-        return json.load(f)
-
-
-def load_industry_baselines():
-    """Loads industry baseline (ideal_ppb, spend_per_capita)."""
-    with open("../data/industry_baselines.json", "r") as f:
-        return json.load(f)
 
 
 # ---------------------------------------

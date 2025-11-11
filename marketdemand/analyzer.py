@@ -1,36 +1,58 @@
 
+# analyzer.py
 
-###
-# Main interface function to main
-###
-def analyze_market(business_data, population_data, filters, spend_per_capita, ideal_people_per_business):
-    # 1. Filter businesses by industry & cities (analyzer should do this)
-    filtered_businesses = [
-        b for b in business_data 
-        if (filters["industry"].lower() == b["industry"].lower())
-        and (not filters["cities"] or b["city"].lower() in [c.lower() for c in filters["cities"]])
-    ]
-    # 2. Sum population for selected cities
-    total_population = 0
-    for city in filters["cities"]:
-        total_population += population_data.get(city.title(), 0)
-    # 3. Compute TAM
+def analyze_market(business_data, population_data, filters, industry_params):
+    """
+    Main market analysis pipeline.
+    business_data: filtered businesses (list of dicts)
+    population_data: dict { "city": population }
+    filters: contains industry + list of cities
+    industry_params: dict:
+        {
+          "ideal_ppb": int,
+          "spend_per_capita": int,
+          "tam_weight": float
+        }
+    """
+
+    # Extract industry parameters
+    ideal_ppb = industry_params["ideal_ppb"]
+    spend_per_capita = industry_params["spend_per_capita"]
+    tam_weight = industry_params["tam_weight"]
+
+    # ------------------------------------
+    # 1. Aggregate population for selected cities
+    # ------------------------------------
+    cities = filters["cities"]
+    total_population = aggregate_population(population_data, cities)
+
+    # ------------------------------------
+    # 2. Compute real people per business
+    # ------------------------------------
+    biz_count = len(business_data)
+    real_ppb = calculate_real_ppb(total_population, biz_count)
+
+    # ------------------------------------
+    # 3. TAM calculations
+    # ------------------------------------
     tam = calculate_tam(total_population, spend_per_capita)
-    # 4. Compute existing revenue in the region
-    current_rev = calculate_current_revenue(filtered_businesses)
-    # 5. Compute remaining TAM and percentage
+    current_rev = calculate_current_revenue(business_data)
     remaining_tam = calculate_remaining_tam(tam, current_rev)
     remaining_pct = calculate_remaining_tam_pct(remaining_tam, tam)
-    # 6. Compute real people-per-business
-    if len(filtered_businesses) == 0:
-        real_ppb = float("inf")
-    else:
-        real_ppb = total_population / len(filtered_businesses)
-    # 7. Compute competition score
-    competition_score = calculate_competition_score(real_ppb, ideal_people_per_business)
-    # 8. Final demand score
-    demand_score = calc_demand_score(competition_score, remaining_pct)
-    # 9. Return all results
+
+    # ------------------------------------
+    # 4. Competition + demand scoring
+    # ------------------------------------
+    competition_score = calculate_competition_score(real_ppb, ideal_ppb)
+    demand_score = calc_demand_score(
+        competition_score=competition_score,
+        remaining_tam_pct=remaining_pct,
+        tam_weight=tam_weight
+    )
+
+    # ------------------------------------
+    # 5. Return all computed values
+    # ------------------------------------
     return {
         "tam": tam,
         "current_revenue": current_rev,
@@ -38,61 +60,75 @@ def analyze_market(business_data, population_data, filters, spend_per_capita, id
         "remaining_pct": remaining_pct,
         "competition_score": competition_score,
         "demand_score": demand_score,
-        "businesses": filtered_businesses,
         "population": total_population,
-        "filters": filters
+        "businesses": biz_count
     }
 
 
-def count_by_industry(business_data):
-    industry_counts = {}
-    for item in business_data:
-        industry = item["industry"]
-        industry_counts[industry] = industry_counts.get(industry, 0) + 1
-    return industry_counts
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
 
-def count_population_per_industry(population,businesses_per_industry):
-    population_per_industry = {}
-    for business in businesses_per_industry:
-        if businesses_per_industry[business] == 0:
-            population_per_industry[business] = float("inf")
-        else:
-            population_per_industry[business] = population/businesses_per_industry[business]
-    return population_per_industry
+def aggregate_population(pop_data, cities):
+    """Sum population for selected cities. Blank → sum all."""
+    if not cities:
+        return sum(pop_data.values())
 
-def calc_demand_score(competition_score,remaining_tam_pct,tam_weight=0.5):
-    if competition_score == float('inf'):
-        competition_score = 5  # treat as massive opportunity
-    comp_weight = 1 - tam_weight
-    demand_score = (competition_score*comp_weight) + (remaining_tam_pct*tam_weight)
-    return demand_score
+    total = 0
+    for c in cities:
+        total += pop_data.get(c, 0)
+    return total
 
-def calculate_remaining_tam_pct(remaining_tam, tam):
-    if tam <= 0:
-        return 0
-    return remaining_tam / tam
-    
-def calculate_competition_score(real_people_per_biz,ideal_people_per_biz):
-    if ideal_people_per_biz == 0:
-        return float('inf')  # Avoid divide-by-zero, treat as massive opportunity
-    competition_score = real_people_per_biz/ideal_people_per_biz
-    return competition_score
-    
+
+def calculate_real_ppb(population, biz_count):
+    """People per business. Handles divide-by-zero."""
+    if biz_count == 0:
+        return float("inf")
+    return population / biz_count
+
 
 def calculate_tam(population, spend_per_capita):
+    """Total addressable market = population * annual spending."""
     return population * spend_per_capita
 
-def calculate_tam_remaining(tam, current_revenue):
-    remaining = tam - current_revenue
-    if remaining < 0:
-        return 0  # no negative market gap
-    return remaining
 
 def calculate_current_revenue(businesses):
-    total_revenue = 0
-    for item in businesses:
-        total_revenue += item["revenue"]
-    return total_revenue
+    """Sum revenue from the filtered businesses."""
+    return sum(b["revenue"] for b in businesses)
+
 
 def calculate_remaining_tam(tam, current_revenue):
-    return tam - current_revenue
+    """How much TAM is not yet served."""
+    return max(tam - current_revenue, 0)
+
+
+def calculate_remaining_tam_pct(remaining, tam):
+    """Remaining TAM as percentage."""
+    if tam == 0:
+        return 1
+    return remaining / tam
+
+
+def calculate_competition_score(real_ppb, ideal_ppb):
+    """Competitive pressure = real_ppb / ideal_ppb."""
+    if ideal_ppb == 0:
+        return float("inf")
+    if real_ppb == float("inf"):
+        return float("inf")
+    return real_ppb / ideal_ppb
+
+
+def calc_demand_score(competition_score, remaining_tam_pct, tam_weight=0.5):
+    """
+    Weighted blend of two things:
+      - remaining TAM percentage (market gap)
+      - competition score (supply-demand imbalance)
+    """
+
+    # If no businesses exist: huge opportunity
+    if competition_score == float("inf"):
+        competition_score = 5  
+
+    comp_weight = 1 - tam_weight
+
+    return (remaining_tam_pct * tam_weight) + (competition_score * comp_weight)
