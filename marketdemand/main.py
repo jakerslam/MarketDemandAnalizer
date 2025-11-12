@@ -3,7 +3,7 @@ from data_sources import (
     fetch_population_data,
     fetch_industry_data
 )
-import analyzer
+from analyzer import analyze_market
 from renderer import render_results
 from filtering import filter_businesses, sort_businesses
 from inputs import set_filter_options
@@ -23,12 +23,12 @@ def main():
         return
     industry_params = industry_data[industry_key]
     # 4. Filter and sort businesses (UI layer)
-    filtered_list = filter_businesses(business_data, filter_options)
-    sorted_list = sort_businesses(filtered_list, filter_options)
+    filtered_business_data = filter_businesses(business_data, filter_options)
+    sorted_list = sort_businesses(filtered_business_data, filter_options)
     limited_list = sorted_list[:filter_options["num_to_display"]]
     # 5. Full market analysis (now uses unified industry_params)
-    analysis_results = analyzer.analyze_market(
-        business_data=filtered_list,
+    analysis_results = analyze_market(
+        business_data=filtered_business_data,
         population_data=population_data,
         filters=filter_options,
         industry_params=industry_params
