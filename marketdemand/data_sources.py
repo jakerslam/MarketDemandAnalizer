@@ -18,8 +18,9 @@ def fetch_demographic_data():
     file_path = os.path.join(DATA_DIR, "sample_demographic_data.json")
     with open(file_path, "r") as f:
         raw = json.load(f)
-        # Make city keys case-insensitive
-        return {k.lower(): v for k, v in raw.items()}
+        # Lowercase city names for matching, preserve subfields
+        normalized = {k.lower(): v for k, v in raw.items()}
+        return normalized
 
 
 def fetch_industry_data():
@@ -27,7 +28,8 @@ def fetch_industry_data():
     with open(file_path, "r") as f:
         raw = json.load(f)
         # Make industry keys case-insensitive
-        return {k.lower(): v for k, v in raw.items()}
+        normalized = {k.lower(): v for k, v in raw.items()}
+        return normalized
 
 
 # ======================

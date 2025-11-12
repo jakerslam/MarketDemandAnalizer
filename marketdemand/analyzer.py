@@ -16,7 +16,13 @@ def analyze_market(business_data, population_data, filters, industry_params):
         }
     """
     # pre test for bad data
-    print(f"[DEBUG] Industry={filters['industry']}, Cities={filters['cities']}, Businesses={len(business_data)}, Population={sum(population_data.values())}")
+    debug_population_total = sum(v.get("population", 0) for v in population_data.values())
+    print(
+        f"[DEBUG] Industry={filters['industry']}, "
+        f"Cities={filters['cities']}, "
+        f"Businesses={len(business_data)}, "
+        f"Population={debug_population_total}"
+    )
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
     spend_per_capita = industry_params["spend_per_capita"]
@@ -27,8 +33,12 @@ def analyze_market(business_data, population_data, filters, industry_params):
     # ------------------------------------
     cities = filters["cities"]
     total_population = aggregate_population(population_data, cities)
+    weighted_income = aggregate_income(population_data, cities)
+    print(f"[DEBUG] Weighted Avg Income: ${weighted_income:,.2f}") # to debug
     if total_population == 0:
         print("⚠️  Missing or zero population data — TAM may be inaccurate.")
+    if total_population is None:
+            print("⚠️  total_population returned None from aggregate_population()")
     # ------------------------------------
     # 2. Compute real people per business
     # ------------------------------------
@@ -91,7 +101,8 @@ def analyze_market(business_data, population_data, filters, industry_params):
         "demand_score": demand_score,
         "population": total_population,
         "businesses": biz_count,
-        "confidence_score": confidence_score
+        "confidence_score": confidence_score,
+        "weighted_income": weighted_income,
     }
 
 # ============================================================
@@ -100,24 +111,29 @@ def analyze_market(business_data, population_data, filters, industry_params):
 
 def aggregate_population(pop_data, cities):
     """Sum population for selected cities (case-insensitive)."""
-    if not cities:
-        return sum(pop_data.values())
-
-    total = 0
     by_lower = {k.strip().lower(): v for k, v in pop_data.items()}
 
+    if not cities:
+        return sum(v.get("population", 0) for v in by_lower.values())
+
+    total = 0
     for c in cities:
         key = (c or "").strip().lower()
-        total += by_lower.get(key, 0)
+        if key in by_lower:
+            total += by_lower[key].get("population", 0)
 
-    return total
+    return total or 0  # Always return a number
+
 
 
 def calculate_real_ppb(population, biz_count):
-    """People per business."""
+    """People per business. Handles divide-by-zero and None."""
+    if not population:
+        population = 0
     if biz_count == 0:
         return float("inf")
     return population / biz_count
+
 
 
 def calculate_tam(population, spend_per_capita):
@@ -257,3 +273,27 @@ def calc_demand_score(
     )
 
     return max(0.0, min(100.0, demand))
+
+def aggregate_income(pop_data, cities):
+    """Compute weighted average income for selected cities (case-insensitive)."""
+    # Case-insensitive lookup
+    by_lower = {k.strip().lower(): v for k, v in pop_data.items()}
+
+    # If no cities provided, compute across all
+    if not cities:
+        total_pop = sum(v["population"] for v in by_lower.values())
+        weighted_income = sum(v["avg_income"] * v["population"] for v in by_lower.values())
+        return weighted_income / total_pop if total_pop else 0
+
+    total_pop = 0
+    weighted_income = 0
+    for c in cities:
+        key = (c or "").strip().lower()
+        if key in by_lower:
+            pop = by_lower[key].get("population", 0)
+            income = by_lower[key].get("avg_income", 0)
+            total_pop += pop
+            weighted_income += income * pop
+
+    return weighted_income / total_pop if total_pop else 0
+
