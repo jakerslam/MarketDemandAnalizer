@@ -1,21 +1,24 @@
 from data_sources import (
-    fetch_business_data,
-    fetch_population_data,
-    fetch_industry_data
+    get_business_data,
+    get_demographic_data,
+    get_industry_data
 )
 from analyzer import analyze_market
 from renderer import render_results
 from filtering import filter_businesses, sort_businesses
 from inputs import set_filter_options
 
+# ============================
+# Control Flow
+# ============================
 def main():
     print("=== Market Demand Analyzer ===")
     # 1. Collect filter options
     filter_options = set_filter_options()
     # 2. Load raw datasets
-    business_data = fetch_business_data()
-    population_data = fetch_population_data()
-    industry_data = fetch_industry_data()
+    business_data = get_business_data()
+    population_data = get_demographic_data()
+    industry_data = get_industry_data()
     # 3. Fetch unified industry params
     industry_key = filter_options["industry"].lower()
     if industry_key not in industry_data:

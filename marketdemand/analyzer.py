@@ -15,6 +15,9 @@ def analyze_market(business_data, population_data, filters, industry_params):
           "rev_weight": float (optional)
         }
     """
+    # pre test for bad data
+    if not business_data:
+        print("⚠️  No businesses found for this industry/city selection.")
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
     spend_per_capita = industry_params["spend_per_capita"]
@@ -25,6 +28,8 @@ def analyze_market(business_data, population_data, filters, industry_params):
     # ------------------------------------
     cities = filters["cities"]
     total_population = aggregate_population(population_data, cities)
+    if total_population == 0:
+        print("⚠️  Missing or zero population data — TAM may be inaccurate.")
     # ------------------------------------
     # 2. Compute real people per business
     # ------------------------------------
