@@ -16,8 +16,7 @@ def analyze_market(business_data, population_data, filters, industry_params):
         }
     """
     # pre test for bad data
-    if not business_data:
-        print("⚠️  No businesses found for this industry/city selection.")
+    print(f"[DEBUG] Industry={filters['industry']}, Cities={filters['cities']}, Businesses={len(business_data)}, Population={sum(population_data.values())}")
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
     spend_per_capita = industry_params["spend_per_capita"]
