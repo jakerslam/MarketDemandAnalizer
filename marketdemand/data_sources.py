@@ -64,18 +64,30 @@ def get_demographic_data(source="file"):
 # API STUBS (for future integration)
 # ======================
 def fetch_demographic_api():
-    # TODO: implement Census, City Data, or similar API
-    pass
+    try:
+        # later: actual API logic
+        return []
+    except Exception as e:
+        print(f"⚠️ API error (business): {e}")
+        return []
 
 
 def fetch_business_api():
-    # TODO: implement Yelp or Google Maps API
-    pass
+    try:
+        # later: actual API logic
+        return []
+    except Exception as e:
+        print(f"⚠️ API error (business): {e}")
+        return []
 
 
 def fetch_industry_api():
-    # TODO: connect to internal industry baseline service
-    pass
+    try:
+        # later: actual API logic
+        return []
+    except Exception as e:
+        print(f"⚠️ API error (business): {e}")
+        return []
 
 
 def validate_data(data, data_type):
