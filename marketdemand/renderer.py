@@ -11,6 +11,7 @@ def render_results(business_list, analysis):
     print(f"Remaining TAM: ${analysis['remaining_tam']:,}")
     print(f"Remaining TAM %: {analysis['remaining_pct']*100:.2f}%")
     print(f"Competition Score: {analysis['competition_score']:.2f}")
+    print(f"Data Confidence Score: {analysis['confidence_score']:.2f}")
     print(f"Demand Score: {analysis['demand_score']:.2f}")
     classify_market(analysis["demand_score"])
 

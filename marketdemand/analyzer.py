@@ -15,25 +15,21 @@ def analyze_market(business_data, population_data, filters, industry_params):
           "rev_weight": float (optional)
         }
     """
-
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
     spend_per_capita = industry_params["spend_per_capita"]
     tam_weight = industry_params.get("tam_weight", 0.5)
     rev_weight = industry_params.get("rev_weight", 0.2)
-
     # ------------------------------------
     # 1. Aggregate population for selected cities
     # ------------------------------------
     cities = filters["cities"]
     total_population = aggregate_population(population_data, cities)
-
     # ------------------------------------
     # 2. Compute real people per business
     # ------------------------------------
     biz_count = len(business_data)
     real_ppb = calculate_real_ppb(total_population, biz_count)
-
     # ------------------------------------
     # 3. TAM calculations
     # ------------------------------------
@@ -41,7 +37,6 @@ def analyze_market(business_data, population_data, filters, industry_params):
     current_rev = calculate_current_revenue(business_data)
     remaining_tam = calculate_remaining_tam(tam, current_rev)
     remaining_pct = calculate_remaining_tam_pct(remaining_tam, tam)
-
     # ------------------------------------
     # 4. Competition normalization
     # ------------------------------------
@@ -64,7 +59,6 @@ def analyze_market(business_data, population_data, filters, industry_params):
         expected=expected_per_biz,
         actual=actual_per_biz
     )
-
     # ------------------------------------
     # 6. Final demand score (0–100)
     # ------------------------------------
@@ -75,9 +69,12 @@ def analyze_market(business_data, population_data, filters, industry_params):
         tam_weight=tam_weight,
         rev_weight=rev_weight
     )
-
     # ------------------------------------
-    # 7. Return all computed values
+    # 7. Confidence score (0–100)
+    # ------------------------------------
+    confidence_score = calc_confidence_index(biz_count)
+    # ------------------------------------
+    # 8. Return all computed values
     # ------------------------------------
     return {
         "tam": tam,
@@ -89,10 +86,9 @@ def analyze_market(business_data, population_data, filters, industry_params):
         "rev_opp_score": rev_opp_score,
         "demand_score": demand_score,
         "population": total_population,
-        "businesses": biz_count
+        "businesses": biz_count,
+        "confidence_score": confidence_score
     }
-
-
 
 # ============================================================
 # POPULATION + BASIC MATH
@@ -129,8 +125,6 @@ def calculate_current_revenue(businesses):
     """Sum revenue across all businesses."""
     return sum(b["revenue"] for b in businesses)
 
-
-
 # ============================================================
 # TAM REMAINING
 # ============================================================
@@ -143,8 +137,6 @@ def calculate_remaining_tam_pct(remaining, tam):
     if tam <= 0:
         return 0.0
     return remaining / tam
-
-
 
 # ============================================================
 # COMPETITION (log scale)
@@ -176,8 +168,6 @@ def normalize_competition_to_0_100(log_score, low=-2.0, high=2.0):
     s = max(low, min(high, log_score))
 
     return ((s - low) / (high - low)) * 100.0
-
-
 
 # ============================================================
 # REVENUE BENCHMARKING
@@ -220,7 +210,15 @@ def calculate_revenue_gap_score(expected, actual):
 
     return gap_pct * 100
 
-
+def calc_confidence_index(biz_count):
+    """Confidence score (0–100) based on sample size, using a soft-log curve."""
+    if biz_count <= 0:
+        return 0
+    # Logarithmic growth that flattens after ~10–15 businesses
+    confidence = (math.log1p(biz_count) / math.log1p(15)) * 100
+    # Cap at 100 just in case
+    return min(100, confidence)
+    
 
 # ============================================================
 # FINAL DEMAND SCORE (0–100)
