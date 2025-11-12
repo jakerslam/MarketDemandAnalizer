@@ -20,12 +20,6 @@ def main():
     population_data = get_demographic_data()
     industry_data = get_industry_data()
     print(f"Data sources loaded: {len(business_data)} businesses, {len(population_data)} cities, {len(industry_data)} industries.")
-    if not business_data:
-        print("⚠️ No business data loaded.")
-    if not population_data:
-        print("⚠️ No population data loaded.")
-    if not industry_data:
-        print("⚠️ No industry data loaded.")
     # 3. Fetch unified industry params
     industry_key = filter_options["industry"].lower()
     if industry_key not in industry_data:

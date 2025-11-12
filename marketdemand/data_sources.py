@@ -35,20 +35,29 @@ def fetch_industry_data():
 # ======================
 def get_business_data(source="file"):
     if source == "api":
-        return fetch_business_api()
-    return fetch_business_data()
+        data = fetch_business_api()
+    else:
+        data = fetch_business_data()
+    validate_data(data,"business")
+    return data
 
 
 def get_industry_data(source="file"):
     if source == "api":
-        return fetch_industry_api()
-    return fetch_industry_data()
+        data = fetch_industry_api()
+    else:
+        data = fetch_industry_data()
+    validate_data(data,"industry")
+    return data
 
 
 def get_demographic_data(source="file"):
     if source == "api":
-        return fetch_demographic_api()
-    return fetch_demographic_data()
+        data = fetch_demographic_api()
+    else:
+        data = fetch_demographic_data()
+    validate_data(data,"demographic")
+    return data
 
 
 # ======================
@@ -67,3 +76,10 @@ def fetch_business_api():
 def fetch_industry_api():
     # TODO: connect to internal industry baseline service
     pass
+
+
+def validate_data(data, data_type):
+    """Warn if no data loaded."""
+    if not data:
+        print(f"⚠️  Warning: No {data_type} data loaded.")
+
