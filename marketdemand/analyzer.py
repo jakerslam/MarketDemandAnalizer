@@ -27,7 +27,6 @@ def analyze_market(business_data, population_data, filters, industry_params):
     )
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
-    spend_per_capita = industry_params["spend_per_capita"]
     tam_weight = industry_params.get("tam_weight", 0.5)
     rev_weight = industry_params.get("rev_weight", 0.2)
     # ------------------------------------
@@ -47,20 +46,24 @@ def analyze_market(business_data, population_data, filters, industry_params):
     biz_count = len(business_data)
     real_ppb = calculate_real_ppb(total_population, biz_count)
     # ------------------------------------
-    # 3. TAM calculations
+    # 3. Compute spend per capita
+    # ------------------------------------
+    spend_per_capita = calculate_spend_per_capita(weighted_income, industry_params)
+    # ------------------------------------
+    # 4. TAM calculations
     # ------------------------------------
     tam = calculate_tam(total_population, spend_per_capita)
     current_rev = calculate_current_revenue(business_data)
     remaining_tam = calculate_remaining_tam(tam, current_rev)
     remaining_pct = calculate_remaining_tam_pct(remaining_tam, tam)
     # ------------------------------------
-    # 4. Competition normalization
+    # 5. Competition normalization
     # ------------------------------------
     competition_log = calculate_competition_score(real_ppb, ideal_ppb)
     competition_norm_0_100 = normalize_competition_to_0_100(competition_log)
 
     # ------------------------------------
-    # 5. Revenue benchmarking
+    # 6. Revenue benchmarking
     # ------------------------------------
     expected_per_biz = calculate_expected_revenue_per_business(
         population=total_population,
@@ -76,7 +79,7 @@ def analyze_market(business_data, population_data, filters, industry_params):
         actual=actual_per_biz
     )
     # ------------------------------------
-    # 6. Final demand score (0–100)
+    # 7. Final demand score (0–100)
     # ------------------------------------
     demand_score = calc_demand_score(
         competition_norm_0_100=competition_norm_0_100,
@@ -86,15 +89,15 @@ def analyze_market(business_data, population_data, filters, industry_params):
         rev_weight=rev_weight
     )
     # ------------------------------------
-    # 7. Confidence score (0–100)
+    # 8. Confidence score (0–100)
     # ------------------------------------
     confidence_score = calc_confidence_index(biz_count)
     # ------------------------------------
-    # 8. Do something with pandas so I get full credit as a "data analysis project" (in case it doesn't already count)
+    # 9. Do something with pandas so I get full credit as a "data analysis project" (in case it doesn't already count)
     # ------------------------------------
     stats_dif = business_stats_df(business_data)
     # ------------------------------------
-    # 9. Return all computed values
+    # 10. Return all computed values
     # ------------------------------------
     return {
         "tam": tam,
@@ -309,3 +312,7 @@ def business_stats_df(business_data):
         "median_revenue": df["revenue"].median(),
         "count": len(df)
     }
+
+def calculate_spend_per_capita(weighted_income, industry_params):
+    """Calculate spend per capita based on weighted income and industry parameters."""
+    return industry_params["spend_per_capita"] 
