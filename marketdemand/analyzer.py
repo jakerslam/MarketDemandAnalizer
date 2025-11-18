@@ -48,7 +48,13 @@ def analyze_market(business_data, population_data, filters, industry_params):
     # ------------------------------------
     # 3. Compute spend per capita
     # ------------------------------------
-    spend_per_capita = calculate_spend_per_capita(weighted_income, industry_params)
+    spend_per_capita = calc_dynamic_spend_per_capita(
+                                                     base_spend=industry_params["spend_per_capita"],
+                                                     weighted_income=weighted_income,
+                                                     real_ppb=real_ppb,
+                                                     ideal_ppb=ideal_ppb,
+                                                     industry_key=filters["industry"]
+    )
     # ------------------------------------
     # 4. TAM calculations
     # ------------------------------------
@@ -313,6 +319,29 @@ def business_stats_df(business_data):
         "count": len(df)
     }
 
-def calculate_spend_per_capita(weighted_income, industry_params):
-    """Calculate spend per capita based on weighted income and industry parameters."""
-    return industry_params["spend_per_capita"] 
+def calculate_dynamic_spend_per_capita(
+    base_spend,
+    weighted_income,
+    real_ppb,
+    ideal_ppb,
+    income_elasticity
+):
+    """
+    Dynamic SPC using constant elasticity income scaling 
+    + competition pressure adjustment.
+    """
+    # 1. Income elasticity model
+    benchmark_income = 60000  # Utah/US baseline
+    income_ratio = weighted_income / benchmark_income if weighted_income > 0 else 1.0
+    # exponential income scaling
+    income_multiplier = income_ratio ** income_elasticity
+    # 2. Competition multiplier (simple & stable)
+    if ideal_ppb > 0 and real_ppb > 0:
+        ratio = real_ppb / ideal_ppb
+        competition_multiplier = 1 / ratio
+        competition_multiplier = max(0.6, min(competition_multiplier, 1.5))
+    else:
+        competition_multiplier = 1.0
+    # 3. Final calculated SPC
+    dynamic_spc = base_spend * income_multiplier * competition_multiplier
+    return dynamic_spc
