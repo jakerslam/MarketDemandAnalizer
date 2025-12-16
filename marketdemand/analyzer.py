@@ -53,7 +53,8 @@ def analyze_market(business_data, population_data, filters, industry_params):
                                                      weighted_income=weighted_income,
                                                      real_ppb=real_ppb,
                                                      ideal_ppb=ideal_ppb,
-                                                     industry_key=filters["industry"]
+                                                     # industry_key=filters["industry"],
+                                                     income_elasticity=    industry_params["income_elasticity"]
     )
     # ------------------------------------
     # 4. TAM calculations
@@ -319,7 +320,7 @@ def business_stats_df(business_data):
         "count": len(df)
     }
 
-def calculate_dynamic_spend_per_capita(
+def calc_dynamic_spend_per_capita(
     base_spend,
     weighted_income,
     real_ppb,
