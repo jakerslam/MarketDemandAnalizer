@@ -23,7 +23,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd marketdemand && python main.py"
+args = "cd marketdemand/python_app && python main.py"
 
 [workflows.workflow.metadata]
 outputType = "console"

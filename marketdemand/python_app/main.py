@@ -17,7 +17,7 @@ def main():
     filter_options = set_filter_options()
     # 2. Load raw datasets
     business_data = get_business_data()
-    population_data = get_demographic_data()
+    population_data = get_demographic_data(source="api")
     industry_data = get_industry_data()
     print(f"Data sources loaded: {len(business_data)} businesses, {len(population_data)} cities, {len(industry_data)} industries.")
     # 3. Fetch unified industry params

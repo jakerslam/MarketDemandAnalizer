@@ -1,0 +1,3 @@
+DROP TABLE IF ESISTS businesses;
+DROP TABLE IF EXISTS cities;
+DROP TABLE IF EXISTS industries;
