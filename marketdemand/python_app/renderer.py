@@ -42,6 +42,8 @@ def render_results(business_list, analysis):
 
     print("-" * 60)
     print(f"Population: {analysis['population']:,}  |  Businesses: {analysis['businesses']}")
-    print(f"TAM: ${analysis['tam']:,}  |  Current Revenue: ${analysis['current_revenue']:,}")
-    print(f"Remaining TAM: ${analysis['remaining_tam']:,}  ({analysis['remaining_pct']*100:.2f}%)")
+    tam = round(analysis['tam'], 0)
+    print(f"TAM: ${tam:,}  |  Current Revenue: ${analysis['current_revenue']:,}")
+    remaining_tam = round(analysis['remaining_tam'], 0)
+    print(f"Remaining TAM: ${remaining_tam:,}  ({analysis['remaining_pct']*100:.2f}%)")
     print()

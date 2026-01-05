@@ -57,9 +57,13 @@ def get_industry_data(source="file"):
 def get_demographic_data(source="file"):
     if source == "api":
         data = fetch_demographic_api()
+        if not data:
+            print("⚠️ Demographic API returned no data. Falling back to file data.")
+            data = fetch_demographic_data()
     else:
         data = fetch_demographic_data()
-    validate_data(data,"demographic")
+
+    validate_data(data, "demographic")
     return data
 
 
@@ -91,9 +95,26 @@ def fetch_demographic_api():
         }
         if api_key:
             params["key"] = api_key
-        response = requests.get(base_url, params=params)
-        response.raise_for_status()
+        response = requests.get(
+            base_url,
+            params=params,
+            timeout=30,
+            headers={"User-Agent": "MarketDemandAnalyzer/0.1"}
+        )
+
+        # If Census returns HTML or blank text, response.json() will crash.
+        content_type = (response.headers.get("Content-Type") or "").lower()
+
+        if response.status_code != 200:
+            print(f"⚠️ Census HTTP {response.status_code}: {response.text[:200]}")
+            return {}
+
+        if "json" not in content_type:
+            print(f"⚠️ Census returned non-JSON content-type={content_type}. Body head: {response.text[:200]}")
+            return {}
+
         data = response.json()
+        
         headers = data[0]
         rows = data[1:]
         name_idx = headers.index("NAME")

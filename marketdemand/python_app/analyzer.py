@@ -3,7 +3,7 @@ import math
 import pandas as pd
 
 
-def analyze_market(business_data, population_data, filters, industry_params):
+def analyze_market(business_data, population_data, filters, industry_params, USE_DYNAMIC_SPC = True):
     """
     Main market analysis pipeline.
     business_data: filtered businesses (list of dicts)
@@ -17,14 +17,17 @@ def analyze_market(business_data, population_data, filters, industry_params):
           "rev_weight": float (optional)
         }
     """
+    print(f"[MODEL] v0.4 | Census Demographics | Dynamic SPC {'ON' if USE_DYNAMIC_SPC else 'OFF'}")
+
     # pre test for bad data
-    debug_population_total = sum(v.get("population", 0) for v in population_data.values())
+    debug_selected_pop = aggregate_population(population_data, filters["cities"])
     print(
         f"[DEBUG] Industry={filters['industry']}, "
         f"Cities={filters['cities']}, "
         f"Businesses={len(business_data)}, "
-        f"Population={debug_population_total}"
+        f"SelectedPopulation={debug_selected_pop}"
     )
+
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
     tam_weight = industry_params.get("tam_weight", 0.5)
@@ -39,7 +42,7 @@ def analyze_market(business_data, population_data, filters, industry_params):
     if total_population == 0:
         print("⚠️  Missing or zero population data — TAM may be inaccurate.")
     if total_population is None:
-            print("⚠️  total_population returned None from aggregate_population()")
+        print("⚠️  total_population returned None from aggregate_population()")
     # ------------------------------------
     # 2. Compute real people per business
     # ------------------------------------
@@ -48,14 +51,21 @@ def analyze_market(business_data, population_data, filters, industry_params):
     # ------------------------------------
     # 3. Compute spend per capita
     # ------------------------------------
-    spend_per_capita = calc_dynamic_spend_per_capita(
-                                                     base_spend=industry_params["spend_per_capita"],
+    base_spend = industry_params["spend_per_capita"]
+    income_elasticity = industry_params.get("income_elasticity", 1.0)
+    if USE_DYNAMIC_SPC:
+        spend_per_capita = calc_dynamic_spend_per_capita(
+                                                     base_spend = base_spend,
                                                      weighted_income=weighted_income,
                                                      real_ppb=real_ppb,
                                                      ideal_ppb=ideal_ppb,
                                                      # industry_key=filters["industry"],
-                                                     income_elasticity=    industry_params["income_elasticity"]
-    )
+                                                     income_elasticity = income_elasticity
+                                                     )
+    else:
+        spend_per_capita = industry_params.get("spend_per_capita")
+    print(f"[DEBUG] SPC used: {spend_per_capita:.2f} (base={base_spend}, elasticity={income_elasticity})")
+
     # ------------------------------------
     # 4. TAM calculations
     # ------------------------------------
