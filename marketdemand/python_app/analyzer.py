@@ -31,7 +31,11 @@ def analyze_market(business_data, population_data, filters, industry_params, USE
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
     tam_weight = industry_params.get("tam_weight", 0.5)
-    rev_weight = industry_params.get("rev_weight", 0.2)
+    rev_values = [b.get("revenue") for b in business_data if isinstance(b.get("revenue"), (int, float))]
+    revenue_coverage = len(rev_values) / len(business_data) if business_data else 0
+    #make rev_weight optional based on availability of revenue data
+    if revenue_coverage == 0:
+        rev_weight = 0.0
     # ------------------------------------
     # 1. Aggregate population for selected cities
     # ------------------------------------
@@ -168,7 +172,12 @@ def calculate_tam(population, spend_per_capita):
 
 def calculate_current_revenue(businesses):
     """Sum revenue across all businesses."""
-    return sum(b["revenue"] for b in businesses)
+    total = 0
+    for b in businesses:
+        rev = b.get("revenue")
+        if isinstance(rev, (int, float)):
+            total += rev
+    return total
 
 # ============================================================
 # TAM REMAINING

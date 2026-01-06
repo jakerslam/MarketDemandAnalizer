@@ -36,12 +36,20 @@ def fetch_industry_data():
 # ======================
 # API FALLBACK INTERFACES
 # ======================
-def get_business_data(source="file"):
+def get_business_data(source="file", industry=None, cities=None):
     if source == "api":
-        data = fetch_business_api()
+        if not cities:
+            print("⚠️ API business mode requires at least one city for now. Falling back to file data.")
+            data = fetch_business_data()
+        else:
+            data = fetch_business_api(industry=industry, cities=cities)
+            if not data:
+                print("⚠️ Business API returned no data. Falling back to file data.")
+                data = fetch_business_data()
     else:
         data = fetch_business_data()
-    validate_data(data,"business")
+
+    validate_data(data, "business")
     return data
 
 
@@ -146,13 +154,79 @@ def fetch_demographic_api():
     return {}
 
 
-def fetch_business_api():
+def fetch_business_api(industry: str, cities: list[str] | None = None, max_per_city: int = 20):
+    """
+    Google Places (New) Text Search.
+    Returns list[dict] in your app's business schema.
+    revenue is None because Places doesn't provide it.
+    """
     try:
-        # later: actual API logic
-        return []
+        api_key = (fetch_API_Keys().get("google_maps_api_key", "") or "").strip()
+        if not api_key:
+            print("⚠️ Google Places API key missing. Returning empty business list.")
+            return []
+    
+        url = "https://places.googleapis.com/v1/places:searchText"
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": api_key,
+            "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount",
+        }
+    
+        if not cities:
+            queries = [f"{industry} in Utah"]
+        else:
+            queries = [f"{industry} in {c}, UT" for c in cities]
+    
+        results = []
+    
+        for q in queries:
+            payload = {
+                "textQuery": q,
+                "maxResultCount": max_per_city,
+                "languageCode": "en",
+                "regionCode": "US",
+            }
+    
+            resp = requests.post(url, headers=headers, json=payload, timeout=30)
+    
+            if resp.status_code != 200:
+                print(f"⚠️ Places HTTP {resp.status_code}: {resp.text[:200]}")
+                continue
+    
+            data = resp.json()
+            places = data.get("places", [])
+    
+            for p in places:
+                name = ((p.get("displayName") or {}).get("text")) or ""
+                addr = p.get("formattedAddress") or ""
+                place_id = p.get("id")
+    
+                # best-effort city parsing: take first segment of address
+                # e.g. "155 S Freedom Blvd, Provo, UT 84601" -> "provo"
+                city_guess = ""
+                if "," in addr:
+                    city_guess = addr.split(",")[1].strip().lower()  # 1 is city in typical formattedAddress
+    
+                results.append({
+                    "business_name": name,
+                    "city": city_guess,
+                    "industry": industry,
+                    "revenue": None,
+                    "place_id": place_id,
+                    "rating": p.get("rating"),
+                    "user_ratings_total": p.get("userRatingCount"),
+                })
+            deduped = {}
+            for b in results:
+                key = b.get("place_id") or (b.get("business_name","").lower(), b.get("city","").lower())
+                deduped[key] = b
+            return list(deduped.values())
     except Exception as e:
         print(f"⚠️ API error (business): {e}")
-        return []
+        return {}
+    return results
+
 
 
 def fetch_industry_api():

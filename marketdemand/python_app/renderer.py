@@ -31,7 +31,10 @@ def render_results(business_list, analysis):
     """
     print("\n=== BUSINESS RESULTS ===")
     for b in business_list:
-        print(f"{b['business_name']} — {b['city']} — {b['industry']} — ${b['revenue']:,}")
+        rev = b.get("revenue")
+        rev_str = f"${rev:,.0f}" if isinstance(rev, (int, float)) else "N/A"
+        print(f"{b.get('business_name','')} — {b.get('city','')} — {b.get('industry','')} — {rev_str}")
+
 
     print("\n=== MARKET ANALYSIS DASHBOARD ===")
     print("-" * 60)
