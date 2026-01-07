@@ -31,10 +31,16 @@ def analyze_market(business_data, population_data, filters, industry_params, USE
     # Extract industry parameters
     ideal_ppb = industry_params["ideal_ppb"]
     tam_weight = industry_params.get("tam_weight", 0.5)
-    rev_values = [b.get("revenue") for b in business_data if isinstance(b.get("revenue"), (int, float))]
-    revenue_coverage = len(rev_values) / len(business_data) if business_data else 0
-    #make rev_weight optional based on availability of revenue data
-    if revenue_coverage == 0:
+    # --- Revenue coverage check (API businesses often have revenue=None) ---
+    rev_values = [
+        b.get("revenue")
+        for b in business_data
+        if isinstance(b.get("revenue"), (int, float)) and b.get("revenue") > 0
+    ]
+    revenue_coverage = (len(rev_values) / len(business_data)) if business_data else 0.0
+
+    if revenue_coverage < 0.2:  # threshold: 20% of businesses have revenue
+        print(f"[INFO] Revenue coverage {revenue_coverage:.0%} — disabling revenue weighting.")
         rev_weight = 0.0
     # ------------------------------------
     # 1. Aggregate population for selected cities
